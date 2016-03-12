@@ -23,7 +23,25 @@ sigma = 0.3;
 %        mean(double(predictions ~= yval))
 %
 
+Cs = [0.01, 0.03, 0.1, 0.3, 1.0, 3.0, 10.0, 30.0];
+sigmas = [0.01, 0.03, 0.1, 0.3, 1.0, 3.0, 10.0, 30.0];
 
+%initial value should be largest
+minError = intmax;
+
+for i = 1:length(Cs)
+	for j = 1:length(sigmas)
+		model = svmTrain(X, y, Cs(i), @(x1, x2) gaussianKernel(x1, x2, sigmas(j)));
+		pred = svmPredict(model, Xval);
+		predError = mean(double(pred ~= yval));
+
+		if (predError <= minError)
+			minError = predError;
+			C = Cs(i);
+			sigma = sigmas(j);
+		end;
+	end;
+end;
 
 
 
